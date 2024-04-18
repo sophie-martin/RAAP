@@ -25,4 +25,4 @@
     
     - name: debug
       debug:
-        msg: "{{ result.stdout_lines }}"
+        msg: "{{ result }}"
