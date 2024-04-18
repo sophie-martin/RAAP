@@ -13,7 +13,7 @@
         method: POST
         follow_redirects: all
         return_content: yes
-        status_code: 201
+        status_code: 200
         force_basic_auth: yes
         validate_certs: false
         headers:
