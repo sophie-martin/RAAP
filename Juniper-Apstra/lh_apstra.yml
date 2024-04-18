@@ -1,0 +1,385 @@
+---
+- name: publish updated policy
+  hosts: all
+  connection: httpapi
+  gather_facts: no
+  collections:
+    - juniper.space
+
+  tasks:
+    - name : login
+      uri:
+        url: "https://{{ apstra01_api_uri }}/user/login"
+        method: POST
+        follow_redirects: all
+        return_content: yes
+        status_code: 201
+        force_basic_auth: yes
+        validate_certs: false
+        headers:
+          Content-Type: application/json
+        body_format: json
+        body: { "username": "{{ url_username }}", "password": "{{ url_password }}" }
+      register: login
+
+
+    - name: get list of blueprint
+      uri:
+        url: "https://{{ apstra01_api_uri }}/blueprints"
+        method: GET
+        follow_redirects: all
+        return_content: yes
+        status_code: 200
+        headers:
+          Content-Type: application/json
+          AUTHTOKEN: "{{ login.json.token }}"
+        validate_certs:  false
+      register: blueprint
+    
+    - name: bp_id 
+      set_fact:
+#       bp_id: "{{ blueprint.json.items[0].id }}"
+       bp_id: "{{ blueprint.json['items'][1].id }}"
+#       bp_id: "{{ blueprint | from_json | json_query('items[0].id') }}"
+
+    - name: display bp_id
+      debug:
+       var: bp_id
+
+    - name: get details of blueprint
+      uri:
+        url: "https://{{ apstra01_api_uri }}/blueprints/{{bp_id}}"
+        method: GET
+        follow_redirects: all
+        return_content: yes
+        status_code: 200
+        headers:
+          Content-Type: application/json
+          AUTHTOKEN: "{{ login.json.token }}"
+        validate_certs:  false
+      register: blueprint_detail
+
+
+    - name: json blueprint_detail
+      set_fact:
+        blueprint_detail_json: "{{ blueprint_detail | to_json }}"
+
+    - name: stringify blueprint_detail_json
+      set_fact:
+        blueprint_detail_string: "{{ blueprint_detail | items | map('join', '=') | join('\n') }}"
+
+    - name: list blueprint_detail
+      set_fact:
+        blueprint_detail_list: "{{ blueprint_detail | dict2items }}"
+
+    #- name: rz_id 
+      #set_fact:
+        #rz_id: "{{ blueprint_detail.nodes.type| select('search', 'security_zone') | list | length > 0 }}"
+        #rz_id:  "{{ blueprint_detail | map(attribute='type') | flatten | map(attribute='id') }}"
+        #rz_id: "{{ blueprint_detail_json.nodes[] | selectattr('type', 'equalto', 'security_zone') | map(attribute='id') | flatten | unique }}"
+        #rz_id: "{{ blueprint_detail_json.nodes['6'].type }}"
+     # debug:
+     #  var: rz_id
+     # loop: "{{ blueprint_detail_list| json_query('nodes[*].id') }}"
+      #loop: "{{ lookup('ansible.builtin.dict', blueprint_detail_list) }}"
+     # when: "'security_zone' in blueprint_detail_list().type"
+
+#    - name: display rz_id
+#      debug:
+#       var: rz_id
+
+    - name: assign variables
+      set_fact:
+        vlan_id: 700
+        rz_id: "BQKxwIbbvr22UzEfKSg"
+        rg_id: "O7boL_XaC5LYSqh-md8"
+        vlan_name: "VLAN700"
+
+    - meta: end_play
+
+    - name: create the virtual-network   
+      uri:
+        url: "https://{{ apstra01_api_uri }}/blueprints/{{bp_id}}/virtual-networks?async=full"
+        method: POST
+        follow_redirects: all
+        return_content: yes
+        status_code: 202
+        headers:
+          Content-Type: application/json
+          AUTHTOKEN: "{{ login.json.token }}"
+        body_format: json
+        body: { "label":"{{vlan_name}}", "security_zone_id":"{{rz_id}}", "vn_type":"vxlan", "bound_to":[ { "system_id":"{{rg_id}}", "vlan_id":"{{vlan_id}}" } ], "ipv4_enabled":true, "dhcp_service":"dhcpServiceEnabled", "create_policy_tagged":true } 
+        validate_certs:  false
+      register: vnet_creation
+
+    - name: task_id
+      set_fact:
+       task_id: "{{ vnet_creation.json.task_id }}"
+
+    - name: get details of vnet creation task
+      uri:
+        url: "https://{{ apstra01_api_uri }}/blueprints/{{bp_id}}/tasks/{{task_id}}"
+        method: GET
+        follow_redirects: all
+        return_content: yes
+        status_code: 200
+        headers:
+          Content-Type: application/json
+          AUTHTOKEN: "{{ login.json.token }}"
+        validate_certs:  false
+      register: task_status
+
+    - name: get CT id
+      uri:
+        url: "https://{{ apstra01_api_uri }}/blueprints/{{bp_id}}/endpoint-policies"
+        method: GET
+        follow_redirects: all
+        return_content: yes
+        status_code: 200
+        headers:
+          Content-Type: application/json
+          AUTHTOKEN: "{{ login.json.token }}"
+        validate_certs:  false
+      register: ct
+
+    - name: Find the ID matching criteria
+      set_fact:
+        ct_id_list: "{{ ct.json | json_query(query) }}"
+      vars:
+        query: "endpoint_policies[?contains(policy_type_name, 'batch') && contains(label, '{{vlan_name}}')].id"
+#              "endpoint_policies[?label == 'Tagged VxLAN ''VLAN700'' && policy_type_name == 'batch'].id"
+
+    - name: Print the matched ID
+      debug:
+        var: ct_id_list
+
+
+    - name: Set fact with transformed string
+      set_fact:
+        ct_id: "{{ item.replace('[\"', '').replace('\"]', '') }}"
+      with_items: "{{ct_id_list}}"
+      register: ct_id
+
+    - name: Print the ct_id transformed string
+      debug:
+        var: ct_id
+
+#    - name: assign ct_id
+#      set_fact: 
+#        ct_id: "9ec34fda-75fe-4c14-b4b4-04c41f26f0e5"
+
+
+
+    - name: get policies
+      uri:
+        url: "https://{{ apstra01_api_uri }}/blueprints/{{bp_id}}/obj-policy-application-points?policy={{ ct_id.results[0].item }}"
+        method: GET
+        follow_redirects: all
+        return_content: yes
+        status_code: 200
+        headers:
+          Content-Type: application/json
+          AUTHTOKEN: "{{ login.json.token }}"
+        validate_certs:  false
+      register: policies
+       
+    - name: replaced unused by used in policies
+      set_fact:
+#        updated_policies: "{{ policies.json.application_points.children[0].children[0].children[0] | replace('unused','used') }}"
+#        updated_policies: "{{ policies.json.application_points.children[0].children[0].children[0] | replace('unused','used') }}"
+         updated_policies: "{{ policies.json.application_points.children[0].children[0].children[0] }}"
+    
+    - name: Display application_point_policy
+      set_fact:
+        application_point_policy: "{{ updated_policies.children  | map(attribute='id') | list }}"
+
+    - name: Extract policies IDs
+      set_fact:
+        used_directly_ids: "{{ updated_policies.children | 
+                              selectattr('policies', 'defined') | 
+                              map(attribute='policies') | 
+                              flatten | 
+                              selectattr('state', 'equalto', 'unused') | 
+                              map(attribute='policy') | 
+                              list | 
+                              unique }}"
+
+    - name: Display policies IDs
+      debug:
+        var: used_directly_ids
+
+    - name: Extract policies IDs
+      set_fact:
+        body_prep_patching_policies: { "application_points": [ { "id": "{{  application_point_policy }}", "policies": [ { "policy": "{{ used_directly_ids }}" , "used": true } ]}]}
+
+    - name: Generate JSON from template
+      template:
+        src: application_points.j2
+        dest: application_points.json
+      register: j2_file_generation
+
+
+    - name: get content of local file
+      set_fact:
+        body: "{{ lookup('file', './application_points.json') }}"
+
+#-----------
+
+# what we get
+#{
+#            "application_points": [
+#                {
+#                    "id": [
+#                        "ohQp4oeHi2y7BHpwrik",
+#                        "tELMkpesVQN1yf0UBHQ",
+#                        "eNswgyuiyk9uzRPrchc"
+#                    ],
+#                    "policies": [
+#                        {
+#                            "policy": [
+#                                "9ec34fda-75fe-4c14-b4b4-04c41f26f0e5",
+#                                "65fba83f-0901-4984-9fff-dc7c0d544fae",
+#                                "7c9799f0-a50f-4b14-9e5f-16ce5b4f76a8",
+#                                "ac52c696-8608-4ea3-b09d-155f2faca79e"
+#                            ],
+#                            "used": true
+#                        }
+#                    ]
+#                }
+#            ]
+#        }
+#    }
+
+
+
+
+
+#    - name: body prep policies
+#      set_fact:
+#        body_prep_patching_policies: { "application_points": { "children": [{"children": [{"children": "{{ updated_policies }}" }]}]} } 
+#        body_prep_patching_policies: { "application_points": [ "{{updated_policies}}" ] } 
+
+
+  
+    - name: path policies
+      uri:
+        url: "https://{{ apstra01_api_uri }}/blueprints/{{bp_id}}/obj-policy-batch-apply?async=full"
+        method: PATCH
+        follow_redirects: all
+        return_content: yes
+        status_code: 202
+        headers:
+          Content-Type: application/json
+          AUTHTOKEN: "{{ login.json.token }}"
+        body_format: json
+        body: "{{ body }}"
+        validate_certs:  false
+      register: patched_policies
+
+    - name: task_id2
+      set_fact:
+       task_id2: "{{ patched_policies.json.task_id }}"
+
+    - name: get details of policies patching task
+      uri:
+        url: "https://{{ apstra01_api_uri }}/blueprints/{{bp_id}}/tasks/{{task_id2}}"
+        method: GET
+        follow_redirects: all
+        return_content: yes
+        status_code: 200
+        headers:
+          Content-Type: application/json
+          AUTHTOKEN: "{{ login.json.token }}"
+        validate_certs:  false
+      register: task2_status
+       
+    - name: get diff status
+      uri:
+        url: "https://{{ apstra01_api_uri }}/blueprints/{{bp_id}}/diff-status"
+        method: GET
+        follow_redirects: all
+        return_content: yes
+        status_code: 200
+        headers:
+          Content-Type: application/json
+          AUTHTOKEN: "{{ login.json.token }}"
+        validate_certs:  false
+      register: diff_status
+
+    - name: staging_version
+      set_fact:
+       staging_version: "{{ diff_status.json.staging_version | int }}"
+
+
+    - name: Generate JSON from template
+      template:
+        src: commit_body.j2
+        dest: commit_body.json
+      register: j2_file_generation
+
+
+    - name: get content of local file
+      set_fact:
+        commit_body: "{{ lookup('file', './commit_body.json') }}"
+
+#    - name: commit_body
+#      set_fact:
+#        body:
+#          description: "Assign Interfaces {{vlan_name}} to CT"
+#          version: "{{diff_status.json | selectattr('version', 'equalto', staging_version |int)}}"
+
+    
+
+
+#    - name: Display body version
+#      debug:
+#        var: body.version
+
+    - name: commit  
+      uri:
+        url: "https://{{ apstra01_api_uri }}/blueprints/{{bp_id}}/deploy?async=full"
+        method: PUT
+        follow_redirects: all
+        return_content: yes
+        status_code: 202
+        headers:
+          Content-Type: application/json
+          AUTHTOKEN: "{{ login.json.token }}"
+        body_format: json
+        body: "{{ commit_body }}"
+        validate_certs:  false
+      register: commit_status
+
+    - name: task_id3
+      set_fact:
+       task_id3: "{{ commit_status.json.task_id }}"
+
+    - name: get details of commit task
+      uri:
+        url: "https://{{ apstra01_api_uri }}/blueprints/{{bp_id}}/tasks/{{task_id3}}"
+        method: GET
+        follow_redirects: all
+        return_content: yes
+        status_code: 200
+        headers:
+          Content-Type: application/json
+          AUTHTOKEN: "{{ login.json.token }}"
+        validate_certs:  false
+      register: task3_status
+
+    - name : logout
+      uri:
+        url: "https://{{ apstra01_api_uri }}/aaa/logout"
+        method: POST
+        follow_redirects: all
+        return_content: yes
+        status_code: 200
+        force_basic_auth: yes
+        validate_certs: false
+        headers:
+          AUTHTOKEN: "{{ login.json.token }}"
+      register: logout
+
+
+
+ 
