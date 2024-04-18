@@ -20,7 +20,7 @@
           Content-Type: application/json
           Accept: application/json
         body_format: json
-        body: { "delay": {{ delay }}, "vm": "{{ wanem_vm }}" }
+        body: { "delay": "{{ delay }}", "vm": "{{ wanem_vm }}" }
       register: result
     
     - name: debug
