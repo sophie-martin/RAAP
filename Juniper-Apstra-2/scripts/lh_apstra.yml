@@ -7,4 +7,4 @@
     - juniper.space
 
   roles:
-    - role: publish_policy
+    - role: ./roles/publish_policy
