@@ -1,0 +1,42 @@
+{
+  "name": "",
+  "spec": [
+    {
+      "max": 1024,
+      "min": 0,
+      "type": "text",
+      "choices": "",
+      "default": "172.19.1.250/api",
+      "required": true,
+      "variable": "apstra01_api_uri",
+      "new_question": false,
+      "question_name": "Enter Apstra API URL",
+      "question_description": "Apstra API URL"
+    },
+    {
+      "max": 25,
+      "min": 0,
+      "type": "text",
+      "choices": "",
+      "default": "admin",
+      "required": true,
+      "variable": "url_username",
+      "new_question": true,
+      "question_name": "Enter Apstra Authentication User",
+      "question_description": "Apstra username"
+    },
+    {
+      "max": 25,
+      "min": 0,
+      "type": "password",
+      "choices": "",
+      "default": "TSL.Dem0s!0606",
+      "required": true,
+      "variable": "url_password",
+      "new_question": true,
+      "question_name": "Enter Apstra Authentication Password ",
+      "question_description": "Apstra user password"
+    }
+  ],
+  "description": ""
+}

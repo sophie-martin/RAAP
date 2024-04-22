@@ -1,0 +1,10 @@
+---
+- name: publish updated policy
+  hosts: all
+  connection: httpapi
+  gather_facts: no
+  collections:
+    - juniper.space
+
+  roles:
+    - role: publish_policy

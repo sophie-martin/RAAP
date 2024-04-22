@@ -1,0 +1,19 @@
+{
+  "application_points": [
+    {% for point_id in application_point_policy %}
+    {
+      "id": "{{ point_id }}",
+      "policies": [
+        {% for policy_id in used_directly_ids %}
+        {
+          "policy": "{{ policy_id }}",
+          "used": true
+        }
+        {% if not loop.last %},{% endif %}
+        {% endfor %}
+      ]
+    }
+    {% if not loop.last %},{% endif %}
+    {% endfor %}
+  ]
+}

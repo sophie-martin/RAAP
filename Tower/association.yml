@@ -2,6 +2,8 @@
 - name: create template
   hosts: all
   gather_facts: no
+  collections:
+    - awx.awx  
 
   tasks:
   - name: " Create Juniper-Apstra-with-survey template"
