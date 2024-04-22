@@ -17,6 +17,6 @@
       controller_username: "{{ tower_username }}"
       controller_password: "{{ tower_password }}"
       survey_enabled:      yes
-      survey_spec:         "{{ lookup('file', './lh_apstra_survey.json') }}"
+      survey_spec:         "{{ lookup('file', '../Juniper-Apstra/lh_apstra_survey.json') }}"
       validate_certs:      no
       extra_vars:          ""
