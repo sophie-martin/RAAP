@@ -1,0 +1,22 @@
+---
+- name: create template
+  hosts: all
+  gather_facts: no
+
+  tasks:
+  - name: " Create Juniper-Apstra-with-survey template"
+    tower_job_template:
+      name:                "Juniper-Apstra-with-survey"
+      job_type:            "run"
+      organization:        "Default"
+      inventory:           "Demo Inventory"
+      project:             "Juniper-Apstra"
+      playbook:            "lh_apstra.yml"
+      state:               "present"
+      #controller_config_file: "/var/lib/awx/projects/test-fred/tower_cli.cfg"
+      controller_username: "{{ tower_username }}"
+      controller_password: "{{ tower_password }}"
+      survey_enabled:      yes
+      survey_spec:         "{{ lookup('file', './lh_apstra_survey.json') }}"
+      validate_certs:      no
+      extra_vars:          ""
