@@ -214,8 +214,8 @@
 
     - name: Generate JSON from template
       template:
-        src: application_points.j2
-        dest: application_points.json
+        src: "{{playbook_dir}}/templates/application_points.j2"
+        dest: "application_points.json"
       register: j2_file_generation
 
 
@@ -313,8 +313,8 @@
 
     - name: Generate JSON from template
       template:
-        src: commit_body.j2
-        dest: commit_body.json
+        src: "{{playbook_dir}}/templates/commit_body.j2"
+        dest: "commit_body.json"
       register: j2_file_generation
 
 
