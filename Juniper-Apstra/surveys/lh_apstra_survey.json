@@ -36,7 +36,31 @@
       "new_question": true,
       "question_name": "Enter Apstra Authentication Password ",
       "question_description": "Apstra user password"
-    }
+    },
+    {
+      "max": 25,
+      "min": 0,
+      "type": "text",
+      "choices": "",
+      "default": "VLAN700",
+      "required": true,
+      "variable": "vlan_name",
+      "new_question": true,
+      "question_name": "Enter VLAN name",
+      "question_description": "Virtual network name to create"
+    },
+    {
+      "max": 900,
+      "min": 0,
+      "type": "integer",
+      "choices": "",
+      "default": 700,
+      "required": true,
+      "variable": "vlan_id",
+      "new_question": true,
+      "question_name": "Enter VLAN id",
+      "question_description": "Virtual network id to create"
+    }  
   ],
   "description": ""
 }

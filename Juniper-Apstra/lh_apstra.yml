@@ -90,10 +90,10 @@
 
     - name: assign variables
       set_fact:
-        vlan_id: 700
+#        vlan_id: 700
         rz_id: "BQKxwIbbvr22UzEfKSg"
         rg_id: "O7boL_XaC5LYSqh-md8"
-        vlan_name: "VLAN700"
+#        vlan_name: "VLAN700"
 
     - meta: end_play
 
