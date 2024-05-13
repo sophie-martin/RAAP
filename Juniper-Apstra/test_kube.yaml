@@ -40,8 +40,8 @@
     - name: date
       shell: |
         date +%s
-      register: current-date       
+      register: currentdate       
 
     - name: current-date
       debug:
-        msg: "{{ current-date }}"           
+        msg: "{{ currentdate }}"           
