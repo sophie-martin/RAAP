@@ -54,13 +54,25 @@
       "min": 0,
       "type": "integer",
       "choices": "",
-      "default": 700,
+      "default": 200,
       "required": true,
       "variable": "vlan_id",
       "new_question": true,
       "question_name": "Enter VLAN id",
       "question_description": "Virtual network id to create"
-    }  
+    },
+    {
+      "max": 900,
+      "min": 0,
+      "type": "integer",
+      "choices": "",
+      "default": 200,
+      "required": true,
+      "variable": "ip1",
+      "new_question": true,
+      "question_name": "Enter ip1",
+      "question_description": "192.168.{{ip1}}.0/24"
+    }      
   ],
   "description": ""
 }

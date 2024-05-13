@@ -95,7 +95,7 @@
         rg_id: "O7boL_XaC5LYSqh-md8"
 #        vlan_name: "VLAN700"
 
-    - meta: end_play
+#    - meta: end_play
 
     - name: create the virtual-network   
       uri:
@@ -108,7 +108,7 @@
           Content-Type: application/json
           AUTHTOKEN: "{{ login.json.token }}"
         body_format: json
-        body: { "label":"{{vlan_name}}", "security_zone_id":"{{rz_id}}", "vn_type":"vxlan", "bound_to":[ { "system_id":"{{rg_id}}", "vlan_id":"{{vlan_id}}" } ], "ipv4_enabled":true, "dhcp_service":"dhcpServiceEnabled", "create_policy_tagged":true } 
+        body: { "label":"{{vlan_name}}", "security_zone_id":"{{rz_id}}", "vn_type":"vxlan", "bound_to":[ { "system_id":"{{rg_id}}", "vlan_id":"{{vlan_id}}" } ], "ipv4_enabled":true, "dhcp_service":"dhcpServiceEnabled", "ipv4_subnet": "192.168.{{ip1}}.0/24", "virtual_gateway_ipv4": "192.168.{{ip1}}.1", "create_policy_tagged":true } 
         validate_certs:  false
       register: vnet_creation
 
