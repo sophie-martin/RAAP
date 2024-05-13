@@ -24,9 +24,9 @@
 
 # oc process -f path/to/template.yaml -p PARAM_NAME=VALUE | oc create -f -
 # - name: Create the YAML file in OpenShift
-#    command: "oc process -f .int-nodeX-vlanY.yml  -p interface={{interface1}} -p node={{node1}} -p vlan={{vlan}} |  oc create -f -"
-# oc create -f create_{{interface1}}_with_vlan{{vlan}}_on_node_{{node1}}    
-#  register: oc_create_{{node}}_{{interface1}}_{{vlan}}_output
+#    command: "oc process -f .int-nodeX-vlanY.yml  -p interface={{interface1}} -p node={{node1}} -p vlan={{vlan_id}} |  oc create -f -"
+# oc create -f create_{{interface1}}_with_vlan{{vlan_id}}_on_node_{{node1}}    
+#  register: oc_create_{{node}}_{{interface1}}_{{vlan_id}}_output
 
   - name: assign variables-1-1
     set_fact:
@@ -36,11 +36,11 @@
   - name: Generate subint node1 int1
     ansible.builtin.template:
       src: "{{playbook_dir}}/templates/int-nodeX-vlanY.j2"
-      dest: "{{interface}}-{{node}}-vlan{{vlan}}.yml"
+      dest: "{{interface}}-{{node}}-vlan{{vlan_id}}.yml"
 
   - name: ls
     shell: |
-      cat {{interface}}-{{node}}-vlan{{vlan}}.yml
+      cat {{interface}}-{{node}}-vlan{{vlan_id}}.yml
     register: yml_content      
 
   - name: yml_content
@@ -51,7 +51,7 @@
 
   - name: Apply OpenShift resource node1 int1
     ansible.builtin.shell:
-      cmd: "oc apply -f {{interface}}-{{node}}-vlan{{vlan}}.yml"
+      cmd: "oc apply -f {{interface}}-{{node}}-vlan{{vlan_id}}.yml"
     environment:
       KUBECONFIG: "{{kubeconfigfile}}"      
 
@@ -63,11 +63,11 @@
   - name: Generate subint node1 int2
     ansible.builtin.template:
       src: "{{playbook_dir}}/templates/int-nodeX-vlanY.j2"
-      dest: "{{interface}}-{{node}}-vlan{{vlan}}.yml"
+      dest: "{{interface}}-{{node}}-vlan{{vlan_id}}.yml"
 
   - name: Apply OpenShift resource node1 int2
     ansible.builtin.shell:
-      cmd: "oc apply -f {{interface}}-{{node}}-vlan{{vlan}}.yml"
+      cmd: "oc apply -f {{interface}}-{{node}}-vlan{{vlan_id}}.yml"
     environment:
       KUBECONFIG: "{{kubeconfigfile}}"         
 
@@ -79,11 +79,11 @@
   - name: Generate subint node2 int1
     ansible.builtin.template:
       src: "{{playbook_dir}}/templates/int-nodeX-vlanY.j2"
-      dest: "{{interface}}-{{node}}-vlan{{vlan}}.yml"
+      dest: "{{interface}}-{{node}}-vlan{{vlan_id}}.yml"
 
   - name: Apply OpenShift resource node2 int1
     ansible.builtin.shell:
-      cmd: "oc apply -f {{interface}}-{{node}}-vlan{{vlan}}.yml"
+      cmd: "oc apply -f {{interface}}-{{node}}-vlan{{vlan_id}}.yml"
     environment:
       KUBECONFIG: "{{kubeconfigfile}}"         
 
@@ -95,11 +95,11 @@
   - name: Generate subint node2 int2
     ansible.builtin.template:
       src: "{{playbook_dir}}/templates/int-nodeX-vlanY.j2"
-      dest: "{{interface}}-{{node}}-vlan{{vlan}}.yml"
+      dest: "{{interface}}-{{node}}-vlan{{vlan_id}}.yml"
 
   - name: Apply OpenShift resource node2 int2
     ansible.builtin.shell:
-      cmd: "oc apply -f {{interface}}-{{node}}-vlan{{vlan}}.yml"
+      cmd: "oc apply -f {{interface}}-{{node}}-vlan{{vlan_id}}.yml"
     environment:
       KUBECONFIG: "{{kubeconfigfile}}"         
 
@@ -111,11 +111,11 @@
   - name: Generate subint node3 int1
     ansible.builtin.template:
       src: "{{playbook_dir}}/templates/int-nodeX-vlanY.j2"
-      dest: "{{interface}}-{{node}}-vlan{{vlan}}.yml"
+      dest: "{{interface}}-{{node}}-vlan{{vlan_id}}.yml"
 
   - name: Apply OpenShift resource node3 int1
     ansible.builtin.shell:
-      cmd: "oc apply -f {{interface}}-{{node}}-vlan{{vlan}}.yml"
+      cmd: "oc apply -f {{interface}}-{{node}}-vlan{{vlan_id}}.yml"
     environment:
       KUBECONFIG: "{{kubeconfigfile}}"         
 
@@ -127,11 +127,11 @@
   - name: Generate subint node3 int2
     ansible.builtin.template:
       src: "{{playbook_dir}}/templates/int-nodeX-vlanY.j2"
-      dest: "{{interface}}-{{node}}-vlan{{vlan}}.yml"
+      dest: "{{interface}}-{{node}}-vlan{{vlan_id}}.yml"
 
   - name: Apply OpenShift resource node3 int2
     ansible.builtin.shell:
-      cmd: "oc apply -f {{interface}}-{{node}}-vlan{{vlan}}.yml"
+      cmd: "oc apply -f {{interface}}-{{node}}-vlan{{vlan_id}}.yml"
     environment:
       KUBECONFIG: "{{kubeconfigfile}}"         
 
@@ -146,11 +146,11 @@
   - name: Generate subint bond node1
     ansible.builtin.template:
       src: "{{playbook_dir}}/templates/bondint-nodeX.j2"
-      dest: "bond-{{node}}-vlan{{vlan}}.yml"
+      dest: "bond-{{node}}-vlan{{vlan_id}}.yml"
 
   - name: Apply OpenShift resource node1
     ansible.builtin.shell:
-      cmd: "oc apply -f bond-{{node}}-vlan{{vlan}}.yml"
+      cmd: "oc apply -f bond-{{node}}-vlan{{vlan_id}}.yml"
     environment:
       KUBECONFIG: "{{kubeconfigfile}}"         
 
@@ -163,11 +163,11 @@
   - name: Generate subint bond node2
     ansible.builtin.template:
       src: "{{playbook_dir}}/templates/bondint-nodeX.j2"
-      dest: "bond-{{node}}-vlan{{vlan}}.yml"
+      dest: "bond-{{node}}-vlan{{vlan_id}}.yml"
 
   - name: Apply OpenShift resource node2
     ansible.builtin.shell:
-      cmd: "oc apply -f bond-{{node}}-vlan{{vlan}}.yml"
+      cmd: "oc apply -f bond-{{node}}-vlan{{vlan_id}}.yml"
     environment:
       KUBECONFIG: "{{kubeconfigfile}}"   
 
@@ -180,11 +180,11 @@
   - name: Generate subint bond node3
     ansible.builtin.template:
       src: "{{playbook_dir}}/templates/bondint-nodeX.j2"
-      dest: "bond-{{node}}-vlan{{vlan}}.yml"
+      dest: "bond-{{node}}-vlan{{vlan_id}}.yml"
 
   - name: Apply OpenShift resource node3
     ansible.builtin.shell:
-      cmd: "oc apply -f bond-{{node}}-vlan{{vlan}}.yml"
+      cmd: "oc apply -f bond-{{node}}-vlan{{vlan_id}}.yml"
     environment:
       KUBECONFIG: "{{kubeconfigfile}}"         
 
@@ -192,11 +192,11 @@
   - name: Generate nad with bond
     ansible.builtin.template:
       src: "{{playbook_dir}}/templates/nad-bond-X.j2"
-      dest: "bond-{{vlan}}.yml"
+      dest: "bond-{{vlan_id}}.yml"
 
   - name: Apply OpenShift resource node3
     ansible.builtin.shell:
-      cmd: "oc apply -f bond-{{vlan}}.yml"
+      cmd: "oc apply -f bond-{{vlan_id}}.yml"
     environment:
       KUBECONFIG: "{{kubeconfigfile}}"         
 
@@ -210,11 +210,11 @@
   - name: Generate yml for ubuntu-pod1
     ansible.builtin.template:
       src: "{{playbook_dir}}/templates/ubuntu-podX-vlanY.j2"
-      dest: "ubuntu-pod-{{node}}-vlan{{vlan}}.yml"
+      dest: "ubuntu-pod-{{node}}-vlan{{vlan_id}}.yml"
 
   - name: Apply yml for ubuntu-pod1
     ansible.builtin.shell:
-      cmd: "oc apply -f ubuntu-pod-{{node}}-vlan{{vlan}}.yml"
+      cmd: "oc apply -f ubuntu-pod-{{node}}-vlan{{vlan_id}}.yml"
     environment:
       KUBECONFIG: "{{kubeconfigfile}}"         
 
@@ -226,11 +226,11 @@
   - name: Generate yml for ubuntu-pod2
     ansible.builtin.template:
       src: "{{playbook_dir}}/templates/ubuntu-podX-vlanY.j2"
-      dest: "ubuntu-pod-{{node}}-vlan{{vlan}}.yml"
+      dest: "ubuntu-pod-{{node}}-vlan{{vlan_id}}.yml"
 
   - name: Apply yml for ubuntu-pod1
     ansible.builtin.shell:
-      cmd: "oc apply -f ubuntu-pod-{{node}}-vlan{{vlan}}.yml"
+      cmd: "oc apply -f ubuntu-pod-{{node}}-vlan{{vlan_id}}.yml"
     environment:
       KUBECONFIG: "{{kubeconfigfile}}"         
 
@@ -242,10 +242,10 @@
   - name: Generate yml for ubuntu-pod3
     ansible.builtin.template:
       src: "{{playbook_dir}}/templates/ubuntu-podX-vlanY.j2"
-      dest: "ubuntu-pod-{{node}}-vlan{{vlan}}.yml"
+      dest: "ubuntu-pod-{{node}}-vlan{{vlan_id}}.yml"
 
   - name: Apply yml for ubuntu-pod1
     ansible.builtin.shell:
-      cmd: "oc apply -f ubuntu-pod-{{node}}-vlan{{vlan}}.yml"
+      cmd: "oc apply -f ubuntu-pod-{{node}}-vlan{{vlan_id}}.yml"
     environment:
       KUBECONFIG: "{{kubeconfigfile}}"         
