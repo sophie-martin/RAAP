@@ -1,25 +1,29 @@
 ---
 - name: tst Kube
   hosts: all
-  connection: httpapi
   gather_facts: no
-  collections:
-    - kubernetes.core
 
   tasks:
-    - name: Login to OCP cluster
-      kubernetes.core.k8s_auth:
-        host: "{{ocp_fqdn}}"
-        username: "{{ocp_user}}"
-        password: "{{ocp_password}}"
-        validate_certs: no
-      register: k8s_auth_result
+    - name: Login to OpenShift cluster
+      shell: |
+        oc login --server=https://"{{ocp_fqdn}}" -u "{{ocp_user}}" -p "{{ocp_password}}" --insecure-skip-tls-verify=true
+      args:
+        executable: /bin/bash
 
-    - name: Get a list of all pods from any namespace
-      kubernetes.core.k8s_info:
-        kind: Pod
-      register: pod_list
+    - name: qui suis je
+      shell: |
+        whoami
+      register: whoami      
 
-    - name: debug
+    - name: debug whoami
       debug:
-        msg: "{{ pod_list }}"
+        msg: "{{ whoami }}"
+
+    - name: ou suis je
+      shell: |
+        echo $HOME
+      register: ousuisje      
+
+    - name: debug ousuisje
+      debug:
+        msg: "{{ ousuisje }}"        
