@@ -36,3 +36,12 @@
     - name: kubeconfigdir
       debug:
         msg: "{{ kubeconfigdir }}"         
+
+    - name: date
+      shell: |
+        date +%s
+      register: current-date       
+
+    - name: current-date
+      debug:
+        msg: "{{ current-date }}"           

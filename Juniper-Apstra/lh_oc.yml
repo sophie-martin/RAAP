@@ -1,10 +1,7 @@
 ---
 - name: oc provisioning commands
-  hosts: openshift
-  connection: httpapi
+  hosts: all
   gather_facts: no
-  collections:
-    - juniper.space
 
   tasks:
   - name: Login to OpenShift cluster
@@ -12,6 +9,13 @@
       oc login --server=https://"{{ocp_fqdn}}" -u "{{ocp_user}}" -p "{{ocp_password}}" --insecure-skip-tls-verify=true
     args:
       executable: /bin/bash
+
+  - name: Make a copy of the kubeconfig
+    shell: cp "$HOME/.kube/config" "$HOME/.kube/config-{{ocp_user}}"
+
+  - name: store kubeconfig
+    set_fact:
+      kubeconfigfile: "$HOME/.kube/config-{{ocp_user}}"  
 
 # oc process -f path/to/template.yaml -p PARAM_NAME=VALUE | oc create -f -
 # - name: Create the YAML file in OpenShift
