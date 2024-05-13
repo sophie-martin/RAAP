@@ -110,7 +110,7 @@
 
   - name: Generate subint node3 int1
     ansible.builtin.template:
-      src: {{playbook_dir}}/templates/int-nodeX-vlanY.j2
+      src: "{{playbook_dir}}/templates/int-nodeX-vlanY.j2"
       dest: "{{interface}}-{{node}}-vlan{{vlan}}.yml"
 
   - name: Apply OpenShift resource node3 int1
@@ -145,7 +145,7 @@
 
   - name: Generate subint bond node1
     ansible.builtin.template:
-      src: {{playbook_dir}}/templates/bondint-nodeX.j2
+      src: "{{playbook_dir}}/templates/bondint-nodeX.j2"
       dest: "bond-{{node}}-vlan{{vlan}}.yml"
 
   - name: Apply OpenShift resource node1
