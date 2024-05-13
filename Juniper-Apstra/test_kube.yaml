@@ -44,4 +44,4 @@
 
     - name: current-date
       debug:
-        msg: "{{ currentdate }}"           
+        msg: "{{ currentdate.stdout_lines[0] }}"           
