@@ -35,7 +35,7 @@
 
   - name: Generate subint node1 int1
     ansible.builtin.template:
-      src: {{playbook_dir}}/templates/int-nodeX-vlanY.j2
+      src: "{{playbook_dir}}/templates/int-nodeX-vlanY.j2"
       dest: "{{interface}}-{{node}}-vlan{{vlan}}.yml"
 
   - name: ls
@@ -62,7 +62,7 @@
 
   - name: Generate subint node1 int2
     ansible.builtin.template:
-      src: {{playbook_dir}}/templates/int-nodeX-vlanY.j2
+      src: "{{playbook_dir}}/templates/int-nodeX-vlanY.j2"
       dest: "{{interface}}-{{node}}-vlan{{vlan}}.yml"
 
   - name: Apply OpenShift resource node1 int2
@@ -94,7 +94,7 @@
 
   - name: Generate subint node2 int2
     ansible.builtin.template:
-      src: {{playbook_dir}}/templates/int-nodeX-vlanY.j2
+      src: "{{playbook_dir}}/templates/int-nodeX-vlanY.j2"
       dest: "{{interface}}-{{node}}-vlan{{vlan}}.yml"
 
   - name: Apply OpenShift resource node2 int2
@@ -126,7 +126,7 @@
 
   - name: Generate subint node3 int2
     ansible.builtin.template:
-      src: {{playbook_dir}}/templates/int-nodeX-vlanY.j2
+      src: "{{playbook_dir}}/templates/int-nodeX-vlanY.j2"
       dest: "{{interface}}-{{node}}-vlan{{vlan}}.yml"
 
   - name: Apply OpenShift resource node3 int2
@@ -162,7 +162,7 @@
 
   - name: Generate subint bond node2
     ansible.builtin.template:
-      src: {{playbook_dir}}/templates/bondint-nodeX.j2
+      src: "{{playbook_dir}}/templates/bondint-nodeX.j2"
       dest: "bond-{{node}}-vlan{{vlan}}.yml"
 
   - name: Apply OpenShift resource node2
@@ -179,7 +179,7 @@
 
   - name: Generate subint bond node3
     ansible.builtin.template:
-      src: {{playbook_dir}}/templates/bondint-nodeX.j2
+      src: "{{playbook_dir}}/templates/bondint-nodeX.j2"
       dest: "bond-{{node}}-vlan{{vlan}}.yml"
 
   - name: Apply OpenShift resource node3
@@ -191,7 +191,7 @@
 
   - name: Generate nad with bond
     ansible.builtin.template:
-      src: {{playbook_dir}}/templates/nad-bond-X.j2
+      src: "{{playbook_dir}}/templates/nad-bond-X.j2"
       dest: "bond-{{vlan}}.yml"
 
   - name: Apply OpenShift resource node3
@@ -209,7 +209,7 @@
 
   - name: Generate yml for ubuntu-pod1
     ansible.builtin.template:
-      src: {{playbook_dir}}/templates/ubuntu-podX-vlanY.j2
+      src: "{{playbook_dir}}/templates/ubuntu-podX-vlanY.j2"
       dest: "ubuntu-pod-{{node}}-vlan{{vlan}}.yml"
 
   - name: Apply yml for ubuntu-pod1
@@ -225,7 +225,7 @@
 
   - name: Generate yml for ubuntu-pod2
     ansible.builtin.template:
-      src: {{playbook_dir}}/templates/ubuntu-podX-vlanY.j2
+      src: "{{playbook_dir}}/templates/ubuntu-podX-vlanY.j2"
       dest: "ubuntu-pod-{{node}}-vlan{{vlan}}.yml"
 
   - name: Apply yml for ubuntu-pod1
@@ -241,7 +241,7 @@
 
   - name: Generate yml for ubuntu-pod3
     ansible.builtin.template:
-      src: {{playbook_dir}}/templates/ubuntu-podX-vlanY.j2
+      src: "{{playbook_dir}}/templates/ubuntu-podX-vlanY.j2"
       dest: "ubuntu-pod-{{node}}-vlan{{vlan}}.yml"
 
   - name: Apply yml for ubuntu-pod1
