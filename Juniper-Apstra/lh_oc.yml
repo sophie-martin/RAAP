@@ -10,12 +10,17 @@
     args:
       executable: /bin/bash
 
+  - name: Get date
+    shell: |
+      date +%s
+    register: currentdate       
+
   - name: Make a copy of the kubeconfig
-    shell: cp "$HOME/.kube/config" "$HOME/.kube/config-{{ocp_user}}"
+    shell: cp "$HOME/.kube/config" "$HOME/.kube/config-{{ currentdate.stdout_lines[0] }}"
 
   - name: store kubeconfig
     set_fact:
-      kubeconfigfile: "$HOME/.kube/config-{{ocp_user}}"  
+      kubeconfigfile: "$HOME/.kube/config-{{ currentdate.stdout_lines[0] }}"  
 
 # oc process -f path/to/template.yaml -p PARAM_NAME=VALUE | oc create -f -
 # - name: Create the YAML file in OpenShift
@@ -33,9 +38,22 @@
       src: {{playbook_dir}}/templates/int-nodeX-vlanY.j2
       dest: "{{interface}}-{{node}}-vlan{{vlan}}.yml"
 
+  - name: ls
+    shell: |
+      cat {{interface}}-{{node}}-vlan{{vlan}}.yml
+    register: yml_content      
+
+  - name: yml_content
+    debug:
+      msg: "{{ yml_content }}"    
+
+  - meta: end_play
+
   - name: Apply OpenShift resource node1 int1
     ansible.builtin.shell:
       cmd: "oc apply -f {{interface}}-{{node}}-vlan{{vlan}}.yml"
+    environment:
+      KUBECONFIG: "{{kubeconfigfile}}"      
 
   - name: assign variables-1-2 
     set_fact:
@@ -50,6 +68,8 @@
   - name: Apply OpenShift resource node1 int2
     ansible.builtin.shell:
       cmd: "oc apply -f {{interface}}-{{node}}-vlan{{vlan}}.yml"
+    environment:
+      KUBECONFIG: "{{kubeconfigfile}}"         
 
   - name: assign variables-2-1 
     set_fact:
@@ -64,6 +84,8 @@
   - name: Apply OpenShift resource node2 int1
     ansible.builtin.shell:
       cmd: "oc apply -f {{interface}}-{{node}}-vlan{{vlan}}.yml"
+    environment:
+      KUBECONFIG: "{{kubeconfigfile}}"         
 
   - name: assign variables-2-2 
     set_fact:
@@ -78,6 +100,8 @@
   - name: Apply OpenShift resource node2 int2
     ansible.builtin.shell:
       cmd: "oc apply -f {{interface}}-{{node}}-vlan{{vlan}}.yml"
+    environment:
+      KUBECONFIG: "{{kubeconfigfile}}"         
 
   - name: assign variables-3-1 
     set_fact:
@@ -92,6 +116,8 @@
   - name: Apply OpenShift resource node3 int1
     ansible.builtin.shell:
       cmd: "oc apply -f {{interface}}-{{node}}-vlan{{vlan}}.yml"
+    environment:
+      KUBECONFIG: "{{kubeconfigfile}}"         
 
   - name: assign variables-3-2 
     set_fact:
@@ -106,6 +132,8 @@
   - name: Apply OpenShift resource node3 int2
     ansible.builtin.shell:
       cmd: "oc apply -f {{interface}}-{{node}}-vlan{{vlan}}.yml"
+    environment:
+      KUBECONFIG: "{{kubeconfigfile}}"         
 
 # Creating bond virtual Interfaces
 
@@ -123,6 +151,8 @@
   - name: Apply OpenShift resource node1
     ansible.builtin.shell:
       cmd: "oc apply -f bond-{{node}}-vlan{{vlan}}.yml"
+    environment:
+      KUBECONFIG: "{{kubeconfigfile}}"         
 
   - name: assign variables-node2
     set_fact:
@@ -138,6 +168,8 @@
   - name: Apply OpenShift resource node2
     ansible.builtin.shell:
       cmd: "oc apply -f bond-{{node}}-vlan{{vlan}}.yml"
+    environment:
+      KUBECONFIG: "{{kubeconfigfile}}"   
 
   - name: assign variables-node3
     set_fact:
@@ -153,6 +185,8 @@
   - name: Apply OpenShift resource node3
     ansible.builtin.shell:
       cmd: "oc apply -f bond-{{node}}-vlan{{vlan}}.yml"
+    environment:
+      KUBECONFIG: "{{kubeconfigfile}}"         
 
 
   - name: Generate nad with bond
@@ -163,6 +197,8 @@
   - name: Apply OpenShift resource node3
     ansible.builtin.shell:
       cmd: "oc apply -f bond-{{vlan}}.yml"
+    environment:
+      KUBECONFIG: "{{kubeconfigfile}}"         
 
 ## Deploy pods
 
@@ -179,6 +215,8 @@
   - name: Apply yml for ubuntu-pod1
     ansible.builtin.shell:
       cmd: "oc apply -f ubuntu-pod-{{node}}-vlan{{vlan}}.yml"
+    environment:
+      KUBECONFIG: "{{kubeconfigfile}}"         
 
   - name: assign node var for ubuntu-pod2
     set_fact:
@@ -193,6 +231,8 @@
   - name: Apply yml for ubuntu-pod1
     ansible.builtin.shell:
       cmd: "oc apply -f ubuntu-pod-{{node}}-vlan{{vlan}}.yml"
+    environment:
+      KUBECONFIG: "{{kubeconfigfile}}"         
 
   - name: assign node var for ubuntu-pod3
     set_fact:
@@ -207,3 +247,5 @@
   - name: Apply yml for ubuntu-pod1
     ansible.builtin.shell:
       cmd: "oc apply -f ubuntu-pod-{{node}}-vlan{{vlan}}.yml"
+    environment:
+      KUBECONFIG: "{{kubeconfigfile}}"         
