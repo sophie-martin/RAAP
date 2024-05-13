@@ -78,7 +78,7 @@
 
   - name: Generate subint node2 int1
     ansible.builtin.template:
-      src: {{playbook_dir}}/templates/int-nodeX-vlanY.j2
+      src: "{{playbook_dir}}/templates/int-nodeX-vlanY.j2"
       dest: "{{interface}}-{{node}}-vlan{{vlan}}.yml"
 
   - name: Apply OpenShift resource node2 int1
