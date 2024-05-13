@@ -27,3 +27,12 @@
     - name: debug ousuisje
       debug:
         msg: "{{ ousuisje }}"        
+
+    - name: ls
+      shell: |
+        ls $HOME/.kube
+      register: kubeconfigdir      
+
+    - name: kubeconfigdir
+      debug:
+        msg: "{{ kubeconfigdir }}"         
