@@ -39,16 +39,16 @@
       src: "{{playbook_dir}}/templates/int-nodeX-vlanY.j2"
       dest: "{{interface}}-{{node}}-vlan{{vlan_id}}.yml"
 
-  - name: ls
-    shell: |
-      cat {{interface}}-{{node}}-vlan{{vlan_id}}.yml
-    register: yml_content      
+  # - name: ls
+  #   shell: |
+  #     cat {{interface}}-{{node}}-vlan{{vlan_id}}.yml
+  #   register: yml_content      
 
-  - name: yml_content
-    debug:
-      msg: "{{ yml_content }}"    
+  # - name: yml_content
+  #   debug:
+  #     msg: "{{ yml_content }}"    
 
-  - meta: end_play
+#  - meta: end_play
 
   - name: Apply OpenShift resource node1 int1
     ansible.builtin.shell:
