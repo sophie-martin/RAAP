@@ -1,0 +1,24 @@
+apiVersion: nmstate.io/v1
+kind: NodeNetworkConfigurationPolicy
+metadata:
+  name: bond{{vlan}}-{{interface1}}-{{interface2}}-policy-{{node}} 
+spec:
+  nodeSelector: 
+    kubernetes.io/hostname: jun-vex-{{node}}.nca.ihost.com 
+  desiredState:
+    interfaces:
+    - name: bond{{vlan}} 
+      description: Bond.{{vlan}} with ports {{interface1}} and {{interface2}} 
+      type: bond
+      state: up 
+      ipv4:
+        dhcp: true 
+        enabled: true 
+      link-aggregation:
+        mode: balance-xor  
+        options:
+          miimon: '140' 
+        port: 
+        - {{interface1}}.{{vlan}}
+        - {{interface2}}.{{vlan}}
+      mtu: 1500

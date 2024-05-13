@@ -1,0 +1,25 @@
+---
+- name: tst Kube
+  hosts: all
+  connection: httpapi
+  gather_facts: no
+  collections:
+    - kubernetes.core
+
+  tasks:
+    - name: Login to OCP cluster
+      kubernetes.core.k8s_auth:
+        host: "{{ocp_fqdn}}"
+        username: "{{ocp_user}}"
+        password: "{{ocp_password}}"
+        validate_certs: no
+      register: k8s_auth_result
+
+    - name: Get a list of all pods from any namespace
+      kubernetes.core.k8s_info:
+        kind: Pod
+      register: pod_list
+
+    - name: debug
+      debug:
+        msg: "{{ pod_list }}"

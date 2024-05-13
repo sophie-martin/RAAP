@@ -1,0 +1,35 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: ubuntu-pod-{{node}}-vlan{{vlan}}
+  namespace: ansible
+  annotations:
+    k8s.v1.cni.cncf.io/networks: '[{ "name": "bond{{vlan}}" }]'
+    k8s.v1.cni.cncf.io/networks-status: |-
+      [{
+          "name": "openshift-sdn",
+          "interface": "eth0",
+          "default": true,
+          "dns": {}
+      },{
+          "name": "net1",
+          "interface": "net1",
+          "ips": [
+              "192.168.{{ip1}}.{{ip2}}"
+          ],
+          "dns": {}
+      }]
+  labels:
+    app: ubuntuapp
+spec:
+  containers:
+    - name: ubuntuapp
+      image: ubuntu-upstart
+      command: ['sh', '-c', "mount /sys/fs/selinux -o remount,ro; ifconfig net1 192.168.{{ip1}}.{{ip2}}/24; route add -net 0.0.0.0/0 gw 192.168.{{ip1}}.1; apt install iperf; apt install ethtool; ethtool -K net1 tx off; sleep 100d"]
+      securityContext:
+        privileged: true
+        capabilities:
+          add:
+          - NET_ADMIN
+  nodeSelector:
+    kubernetes.io/hostname: jun-vex-{{node}}.nca.ihost.com 

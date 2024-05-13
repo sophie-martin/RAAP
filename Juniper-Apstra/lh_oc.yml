@@ -1,0 +1,205 @@
+---
+- name: oc provisioning commands
+  hosts: openshift
+  connection: httpapi
+  gather_facts: no
+  collections:
+    - juniper.space
+
+  tasks:
+  - name: Login to OpenShift cluster
+    shell: |
+      oc login --server=https://"{{ocp_fqdn}}" -u "{{ocp_user}}" -p "{{ocp_password}}" --insecure-skip-tls-verify=true
+    args:
+      executable: /bin/bash
+
+# oc process -f path/to/template.yaml -p PARAM_NAME=VALUE | oc create -f -
+# - name: Create the YAML file in OpenShift
+#    command: "oc process -f ../yaml/int-nodeX-vlanY.yml  -p interface={{interface1}} -p node={{node1}} -p vlan={{vlan}} |  oc create -f -"
+# oc create -f create_{{interface1}}_with_vlan{{vlan}}_on_node_{{node1}}    
+#  register: oc_create_{{node}}_{{interface1}}_{{vlan}}_output
+
+  - name: assign variables-1-1
+    set_fact:
+      interface: "{{interface1}}"
+      node: "{{node1}}"
+
+  - name: Generate subint node1 int1
+    ansible.builtin.template:
+      src: {{playbook_dir}}/templates/int-nodeX-vlanY.j2
+      dest: "./yaml/{{interface}}-{{node}}-vlan{{vlan}}.yml"
+
+  - name: Apply OpenShift resource node1 int1
+    ansible.builtin.shell:
+      cmd: "oc apply -f ./yaml/{{interface}}-{{node}}-vlan{{vlan}}.yml"
+
+  - name: assign variables-1-2 
+    set_fact:
+      interface: "{{interface2}}"
+      node: "{{node1}}"
+
+  - name: Generate subint node1 int2
+    ansible.builtin.template:
+      src: {{playbook_dir}}/templates/int-nodeX-vlanY.j2
+      dest: "./yaml/{{interface}}-{{node}}-vlan{{vlan}}.yml"
+
+  - name: Apply OpenShift resource node1 int2
+    ansible.builtin.shell:
+      cmd: "oc apply -f ./yaml/{{interface}}-{{node}}-vlan{{vlan}}.yml"
+
+  - name: assign variables-2-1 
+    set_fact:
+      interface: "{{interface1}}"
+      node: "{{node2}}"
+
+  - name: Generate subint node2 int1
+    ansible.builtin.template:
+      src: {{playbook_dir}}/templates/int-nodeX-vlanY.j2
+      dest: "./yaml/{{interface}}-{{node}}-vlan{{vlan}}.yml"
+
+  - name: Apply OpenShift resource node2 int1
+    ansible.builtin.shell:
+      cmd: "oc apply -f ./yaml/{{interface}}-{{node}}-vlan{{vlan}}.yml"
+
+  - name: assign variables-2-2 
+    set_fact:
+      interface: "{{interface2}}"
+      node: "{{node2}}"
+
+  - name: Generate subint node2 int2
+    ansible.builtin.template:
+      src: {{playbook_dir}}/templates/int-nodeX-vlanY.j2
+      dest: "./yaml/{{interface}}-{{node}}-vlan{{vlan}}.yml"
+
+  - name: Apply OpenShift resource node2 int2
+    ansible.builtin.shell:
+      cmd: "oc apply -f ./yaml/{{interface}}-{{node}}-vlan{{vlan}}.yml"
+
+  - name: assign variables-3-1 
+    set_fact:
+      interface: "{{interface1}}"
+      node: "{{node3}}"
+
+  - name: Generate subint node3 int1
+    ansible.builtin.template:
+      src: {{playbook_dir}}/templates/int-nodeX-vlanY.j2
+      dest: "./yaml/{{interface}}-{{node}}-vlan{{vlan}}.yml"
+
+  - name: Apply OpenShift resource node3 int1
+    ansible.builtin.shell:
+      cmd: "oc apply -f ./yaml/{{interface}}-{{node}}-vlan{{vlan}}.yml"
+
+  - name: assign variables-3-2 
+    set_fact:
+      interface: "{{interface2}}"
+      node: "{{node3}}"
+
+  - name: Generate subint node3 int2
+    ansible.builtin.template:
+      src: {{playbook_dir}}/templates/int-nodeX-vlanY.j2
+      dest: "./yaml/{{interface}}-{{node}}-vlan{{vlan}}.yml"
+
+  - name: Apply OpenShift resource node3 int2
+    ansible.builtin.shell:
+      cmd: "oc apply -f ./yaml/{{interface}}-{{node}}-vlan{{vlan}}.yml"
+
+# Creating bond virtual Interfaces
+
+  - name: assign variables-node1
+    set_fact:
+      interface1: "{{interface1}}"
+      interface2: "{{interface2}}"
+      node: "{{node1}}"
+
+  - name: Generate subint bond node1
+    ansible.builtin.template:
+      src: {{playbook_dir}}/templates/bondint-nodeX.j2
+      dest: "./yaml/bond-{{node}}-vlan{{vlan}}.yml"
+
+  - name: Apply OpenShift resource node1
+    ansible.builtin.shell:
+      cmd: "oc apply -f ./yaml/bond-{{node}}-vlan{{vlan}}.yml"
+
+  - name: assign variables-node2
+    set_fact:
+      interface1: "{{interface1}}"
+      interface2: "{{interface2}}"
+      node: "{{node2}}"
+
+  - name: Generate subint bond node2
+    ansible.builtin.template:
+      src: {{playbook_dir}}/templates/bondint-nodeX.j2
+      dest: "./yaml/bond-{{node}}-vlan{{vlan}}.yml"
+
+  - name: Apply OpenShift resource node2
+    ansible.builtin.shell:
+      cmd: "oc apply -f ./yaml/bond-{{node}}-vlan{{vlan}}.yml"
+
+  - name: assign variables-node3
+    set_fact:
+      interface1: "{{interface1}}"
+      interface2: "{{interface2}}"
+      node: "{{node3}}"
+
+  - name: Generate subint bond node3
+    ansible.builtin.template:
+      src: {{playbook_dir}}/templates/bondint-nodeX.j2
+      dest: "./yaml/bond-{{node}}-vlan{{vlan}}.yml"
+
+  - name: Apply OpenShift resource node3
+    ansible.builtin.shell:
+      cmd: "oc apply -f ./yaml/bond-{{node}}-vlan{{vlan}}.yml"
+
+
+  - name: Generate nad with bond
+    ansible.builtin.template:
+      src: {{playbook_dir}}/templates/nad-bond-X.j2
+      dest: "./yaml/bond-{{vlan}}.yml"
+
+  - name: Apply OpenShift resource node3
+    ansible.builtin.shell:
+      cmd: "oc apply -f ./yaml/bond-{{vlan}}.yml"
+
+## Deploy pods
+
+  - name: assign node var for ubuntu-pod1
+    set_fact:
+      node: "{{node1}}"
+      ip2: "11"
+
+  - name: Generate yml for ubuntu-pod1
+    ansible.builtin.template:
+      src: {{playbook_dir}}/templates/ubuntu-podX-vlanY.j2
+      dest: "./yaml/ubuntu-pod-{{node}}-vlan{{vlan}}.yml"
+
+  - name: Apply yml for ubuntu-pod1
+    ansible.builtin.shell:
+      cmd: "oc apply -f ./yaml/ubuntu-pod-{{node}}-vlan{{vlan}}.yml"
+
+  - name: assign node var for ubuntu-pod2
+    set_fact:
+      node: "{{node2}}"
+      ip2: "12"
+
+  - name: Generate yml for ubuntu-pod2
+    ansible.builtin.template:
+      src: {{playbook_dir}}/templates/ubuntu-podX-vlanY.j2
+      dest: "./yaml/ubuntu-pod-{{node}}-vlan{{vlan}}.yml"
+
+  - name: Apply yml for ubuntu-pod1
+    ansible.builtin.shell:
+      cmd: "oc apply -f ./yaml/ubuntu-pod-{{node}}-vlan{{vlan}}.yml"
+
+  - name: assign node var for ubuntu-pod3
+    set_fact:
+      node: "{{node3}}"
+      ip2: "13"
+
+  - name: Generate yml for ubuntu-pod3
+    ansible.builtin.template:
+      src: {{playbook_dir}}/templates/ubuntu-podX-vlanY.j2
+      dest: "./yaml/ubuntu-pod-{{node}}-vlan{{vlan}}.yml"
+
+  - name: Apply yml for ubuntu-pod1
+    ansible.builtin.shell:
+      cmd: "oc apply -f ./yaml/ubuntu-pod-{{node}}-vlan{{vlan}}.yml"
