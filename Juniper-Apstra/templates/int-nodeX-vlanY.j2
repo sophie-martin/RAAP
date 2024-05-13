@@ -1,19 +1,19 @@
 apiVersion: nmstate.io/v1
 kind: NodeNetworkConfigurationPolicy
 metadata:
-  name: {{interface}}-policy-{{node}}-vlan{{vlan}} 
+  name: {{interface}}-policy-{{node}}-vlan{{vlan_id}} 
 spec:
   nodeSelector: 
     kubernetes.io/hostname: jun-vex-{{node}}.nca.ihost.com 
   desiredState:
     interfaces:
-    - name: {{interface}}.{{vlan}} 
-      description: vlan {{vlan}} set on {{interface}} 
+    - name: {{interface}}.{{vlan_id}} 
+      description: vlan {{vlan_id}} set on {{interface}} 
       type: vlan 
       state: up 
       vlan:
          base-iface: {{interface}}
-         id: {{vlan}}
+         id: {{vlan_id}}
       ipv4:
         dhcp: false 
         enabled: false

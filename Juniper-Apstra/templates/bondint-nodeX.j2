@@ -1,14 +1,14 @@
 apiVersion: nmstate.io/v1
 kind: NodeNetworkConfigurationPolicy
 metadata:
-  name: bond{{vlan}}-{{interface1}}-{{interface2}}-policy-{{node}} 
+  name: bond{{vlan_id}}-{{interface1}}-{{interface2}}-policy-{{node}} 
 spec:
   nodeSelector: 
     kubernetes.io/hostname: jun-vex-{{node}}.nca.ihost.com 
   desiredState:
     interfaces:
-    - name: bond{{vlan}} 
-      description: Bond.{{vlan}} with ports {{interface1}} and {{interface2}} 
+    - name: bond{{vlan_id}} 
+      description: Bond.{{vlan_id}} with ports {{interface1}} and {{interface2}} 
       type: bond
       state: up 
       ipv4:
@@ -19,6 +19,6 @@ spec:
         options:
           miimon: '140' 
         port: 
-        - {{interface1}}.{{vlan}}
-        - {{interface2}}.{{vlan}}
+        - {{interface1}}.{{vlan_id}}
+        - {{interface2}}.{{vlan_id}}
       mtu: 1500

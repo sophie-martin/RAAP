@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: ubuntu-pod-{{node}}-vlan{{vlan}}
+  name: ubuntu-pod-{{node}}-vlan{{vlan_id}}
   namespace: ansible
   annotations:
-    k8s.v1.cni.cncf.io/networks: '[{ "name": "bond{{vlan}}" }]'
+    k8s.v1.cni.cncf.io/networks: '[{ "name": "bond{{vlan_id}}" }]'
     k8s.v1.cni.cncf.io/networks-status: |-
       [{
           "name": "openshift-sdn",
