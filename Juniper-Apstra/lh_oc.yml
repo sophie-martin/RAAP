@@ -32,8 +32,6 @@
     debug:
       msg: "{{ yml_content }}"    
 
-  - meta: end_play
-
 # oc process -f path/to/template.yaml -p PARAM_NAME=VALUE | oc create -f -
 # - name: Create the YAML file in OpenShift
 #    command: "oc process -f .int-nodeX-vlanY.yml  -p interface={{interface1}} -p node={{node1}} -p vlan={{vlan_id}} |  oc create -f -"
@@ -54,7 +52,10 @@
     ansible.builtin.shell:
       cmd: "oc apply -f {{interface}}-{{node}}-vlan{{vlan_id}}.yml"
     environment:
-      KUBECONFIG: "{{kubeconfigfile}}"      
+      KUBECONFIG: {{kubeconfigfile}}    
+
+  - meta: end_play
+
 
   - name: assign variables-1-2 
     set_fact:
