@@ -52,7 +52,7 @@
     ansible.builtin.shell: |
         oc apply -f {{interface}}-{{node}}-vlan{{vlan_id}}.yml
     environment:
-      KUBECONFIG: "$HOME/.kube/config-{{ currentdate.stdout_lines[0] }}"
+      KUBECONFIG: "~/.kube/config-{{ currentdate.stdout_lines[0] }}"
 
   - meta: end_play
 
