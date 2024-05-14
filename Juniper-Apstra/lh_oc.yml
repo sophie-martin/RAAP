@@ -49,8 +49,7 @@
       dest: "{{interface}}-{{node}}-vlan{{vlan_id}}.yml"
 
   - name: Apply OpenShift resource node1 int1
-    ansible.builtin.shell:
-      shell: |
+    ansible.builtin.shell: |
         export KUBECONFIG={{kubeconfigfile}}
         oc apply -f {{interface}}-{{node}}-vlan{{vlan_id}}.yml
 
