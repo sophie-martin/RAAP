@@ -52,7 +52,7 @@
     ansible.builtin.shell:
       cmd: "oc apply -f {{interface}}-{{node}}-vlan{{vlan_id}}.yml"
     environment:
-      KUBECONFIG: {{kubeconfigfile}}    
+      KUBECONFIG: "{{kubeconfigfile}}" 
 
   - meta: end_play
 
