@@ -21,16 +21,7 @@
 
   - name: store kubeconfig
     set_fact:
-      kubeconfigfile: "$HOME/.kube/config-{{ currentdate.stdout_lines[0] }}"  
-
-  - name: ls
-    shell: |
-      cat {{kubeconfigfile}}
-    register: yml_content      
-
-  - name: yml_content
-    debug:
-      msg: "{{ yml_content }}"    
+      kubeconfigfile: "$HOME/.kube/config-{{ currentdate.stdout_lines[0] }}"   
 
 # oc process -f path/to/template.yaml -p PARAM_NAME=VALUE | oc create -f -
 # - name: Create the YAML file in OpenShift
@@ -50,9 +41,16 @@
 
   - name: Apply OpenShift resource node1 int1
     ansible.builtin.shell: |
+        export KUBECONFIG={{ kubeconfigfile }}
         oc apply -f {{interface}}-{{node}}-vlan{{vlan_id}}.yml
-    environment:
-      KUBECONFIG: "~/.kube/config-{{ currentdate.stdout_lines[0] }}"
+        cat {{kubeconfigfile}}
+    register: yml_content 
+    # environment:
+    #     KUBECONFIG: "{{ kubeconfigfile }}"
+
+  - name: yml_content
+    debug:
+      msg: "{{ yml_content }}"   
 
   - meta: end_play
 
