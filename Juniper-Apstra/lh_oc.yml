@@ -44,8 +44,6 @@
         export KUBECONFIG={{ kubeconfigfile }}
         oc apply -f {{interface}}-{{node}}-vlan{{vlan_id}}.yml  
 
-  - meta: end_play
-
   - name: assign variables-1-2 
     set_fact:
       interface: "{{interface2}}"
