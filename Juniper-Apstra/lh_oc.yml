@@ -40,9 +40,11 @@
       dest: "{{interface}}-{{node}}-vlan{{vlan_id}}.yml"
 
   - name: Apply OpenShift resource node1 int1
-    ansible.builtin.shell: |
-        export KUBECONFIG={{ kubeconfigfile }}
-        oc apply -f {{interface}}-{{node}}-vlan{{vlan_id}}.yml 
+    shell: "oc apply -f {{interface}}-{{node}}-vlan{{vlan_id}}.yml"
+    environment:
+      KUBECONFIG: "{{kubeconfigfile}}"    
+
+  -meta: end_play
 
   - name: assign variables-1-2 
     set_fact:
