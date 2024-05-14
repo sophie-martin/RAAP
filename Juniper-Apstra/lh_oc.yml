@@ -23,6 +23,17 @@
     set_fact:
       kubeconfigfile: "$HOME/.kube/config-{{ currentdate.stdout_lines[0] }}"  
 
+  - name: ls
+    shell: |
+      cat $HOME/.kube/config-{{ currentdate.stdout_lines[0] }}
+    register: yml_content      
+
+  - name: yml_content
+    debug:
+      msg: "{{ yml_content }}"    
+
+ - meta: end_play
+
 # oc process -f path/to/template.yaml -p PARAM_NAME=VALUE | oc create -f -
 # - name: Create the YAML file in OpenShift
 #    command: "oc process -f .int-nodeX-vlanY.yml  -p interface={{interface1}} -p node={{node1}} -p vlan={{vlan_id}} |  oc create -f -"
@@ -38,17 +49,6 @@
     ansible.builtin.template:
       src: "{{playbook_dir}}/templates/int-nodeX-vlanY.j2"
       dest: "{{interface}}-{{node}}-vlan{{vlan_id}}.yml"
-
-  # - name: ls
-  #   shell: |
-  #     cat {{interface}}-{{node}}-vlan{{vlan_id}}.yml
-  #   register: yml_content      
-
-  # - name: yml_content
-  #   debug:
-  #     msg: "{{ yml_content }}"    
-
-#  - meta: end_play
 
   - name: Apply OpenShift resource node1 int1
     ansible.builtin.shell:
