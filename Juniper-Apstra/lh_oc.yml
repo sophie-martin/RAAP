@@ -32,7 +32,7 @@
     debug:
       msg: "{{ yml_content }}"    
 
- - meta: end_play
+  - meta: end_play
 
 # oc process -f path/to/template.yaml -p PARAM_NAME=VALUE | oc create -f -
 # - name: Create the YAML file in OpenShift
