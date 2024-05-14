@@ -42,7 +42,7 @@
       "min": 0,
       "type": "text",
       "choices": "",
-      "default": "VLAN700",
+      "default": "VLAN200",
       "required": true,
       "variable": "vlan_name",
       "new_question": true,
