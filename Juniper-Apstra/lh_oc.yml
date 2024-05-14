@@ -137,7 +137,7 @@
   - name: Apply OpenShift resource node1
     ansible.builtin.shell: |
         export KUBECONFIG={{ kubeconfigfile }}
-        oc apply -f bond-{{node}}-vlan{{vlan_id}}.yml"   
+        oc apply -f bond-{{node}}-vlan{{vlan_id}}.yml
 
   - name: assign variables-node2
     set_fact:
